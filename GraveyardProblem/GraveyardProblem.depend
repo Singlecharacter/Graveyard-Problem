@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1416540772 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\edgegraph.cpp
+	"edgegraph.h"
+
+1416552948 c:\users\conor\documents\github\graveyard-problem\graveyardproblem\edgegraph.h
+	<vector>
+	<iostream>
+
+1416540799 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\main.cpp
+	"edgegraph.h"
+

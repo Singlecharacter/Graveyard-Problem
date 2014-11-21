@@ -40,15 +40,15 @@ public:
     //the vertex containing startValue to the vertex containing endValue
     //std::vector<int> findDijkstraPath(int startValue, int endValue);
     //std::vector<int> findPrimPath(int startValue, int endValue);
-    std::vector<edge> findKruskalPath(int startValue, int endValue);
-    std::vector<edge> findKruskalPath(int startValue, int endValue, std::vector<std::vector<edge> > trees);
+    std::vector<edge*> findKruskalPath(int startValue, int endValue, std::vector<int> ignoredEdgeIndexes);
+    std::vector<edge*> findKruskalPath(int startValue, int endValue, std::vector<std::vector<edge*> > trees, std::vector<int> ignoredEdgeIndexes);
 
 private:
 
     int findVertex(int searchData);
 
-    std::vector<edge> edges;
-    std::vector<vertex> vertices;
+    std::vector<edge*> edges;
+    std::vector<vertex*> vertices;
 };
 
 #endif // EDGEGRAPH_H

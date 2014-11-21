@@ -1,4 +1,4 @@
-#include "edgegraph.cpp"
+#include "edgegraph.h"
 
 int main()
 {
