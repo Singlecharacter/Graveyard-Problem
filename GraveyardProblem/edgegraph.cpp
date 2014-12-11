@@ -298,30 +298,32 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
 
         //Push the first edge onto the path
         std::vector<edge*> path;
-        for(int i = 0; i < trees.at(0).size(); i++)
+        std::vector<edge*> spanningTree = trees.at(0);
+        for(int i = 0; i < spanningTree.size(); i++)
         {
-            if(trees.at(0).at(i)->startIndex == startIndex)
+            if(spanningTree.at(i)->startIndex == startIndex)
             {
-                path.push_back(trees.at(0).at(i));
+                path.push_back(spanningTree.at(i));
                 break;
             }
-            else if(trees.at(0).at(i)->endIndex == startIndex)
+            else if(spanningTree.at(i)->endIndex == startIndex)
             {
-                if(trees.at(0).at(i)->directed)
+                if(spanningTree.at(i)->directed)
                 {
                     for(int j = 0; j < edges.size(); j++)
                     {
-                        if(trees.at(0).at(i) == edges.at(j))
+                        if(spanningTree.at(i) == edges.at(j))
                         {
-                            trees.at(0).erase(trees.at(0).begin()+i);
+                            spanningTree.erase(spanningTree.begin()+i);
                             ignoredEdgeIndexes.push_back(j);
+                            trees.at(0) = spanningTree;
                             return findKruskalPath(startValue,endValue,trees,ignoredEdgeIndexes);
                         }
                     }
                 }
                 else
                 {
-                    path.push_back(trees.at(0).at(i));
+                    path.push_back(spanningTree.at(i));
                     break;
                 }
             }
@@ -329,27 +331,29 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
 
         while(true)
         {
-            for(int i = 0; i < trees.at(0).size(); i++)
+            for(int i = 0; i < spanningTree.size(); i++)
             {
-                if(trees.at(0).at(i)->startIndex == path.at(path.size()-1)->endIndex)
+                if(spanningTree.at(i)->startIndex == path.at(path.size()-1)->endIndex)
                 {
-                    path.push_back(trees.at(0).at(i));
+                    path.push_back(spanningTree.at(i));
+                    break;
                 }
-                else if(trees.at(0).at(i)->endIndex == path.at(path.size()-1)->endIndex)
+                else if(spanningTree.at(i)->endIndex == path.at(path.size()-1)->endIndex)
                 {
                     if(trees.at(0).at(i)->directed)
                     {
-                        trees.at(0).erase(trees.at(0).begin()+i);
+                        spanningTree.erase(trees.at(0).begin()+i);
                         i--;
                     }
                     else
                     {
                         path.push_back(trees.at(0).at(i));
+                        break;
                     }
                 }
             }
 
-
+            if(path.at(path.size()-1)->endIndex == endIndex;)
         }
     }
     else
