@@ -31,6 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="customio.cpp" />
+		<Unit filename="customio.h" />
 		<Unit filename="edgegraph.cpp" />
 		<Unit filename="edgegraph.h" />
 		<Unit filename="main.cpp" />

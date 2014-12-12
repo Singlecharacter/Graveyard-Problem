@@ -21,7 +21,7 @@ void EdgeGraph::addVertex(int newData)
     }
 }
 
-void EdgeGraph::addEdge(int firstValue, int secondValue, int weight)
+bool EdgeGraph::addEdge(int firstValue, int secondValue, int weight)
 {
     int firstIndex = findVertex(firstValue);
     int secondIndex = findVertex(secondValue);
@@ -37,6 +37,12 @@ void EdgeGraph::addEdge(int firstValue, int secondValue, int weight)
         newEdge->beenChecked = false;
 
         edges.push_back(newEdge);
+
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -47,7 +53,7 @@ void EdgeGraph::addEdgeDirected(int firstValue, int secondValue, int weight)
 
     if(firstIndex >= 0 && secondIndex >= 0)
     {
-        edge *newEdge;
+        edge *newEdge = new edge;
 
         newEdge->startIndex = firstIndex;
         newEdge->endIndex = secondIndex;
@@ -78,9 +84,14 @@ void EdgeGraph::removeEdge(int firstValue, int secondValue)
     }
 }
 
-void EdgeGraph::removeVertex(int removeData)
+void EdgeGraph::removeVertex(int removeIndex)
 {
-    int removeIndex = findVertex(removeData);
+    std::cout << removeIndex << std::endl;
+    std::cout << "Edges before remove: " << edges.size() << std::endl;
+    for(int i = 0; i < edges.size(); i++)
+    {
+        std::cout << edges.at(i)->startIndex << "," << edges.at(i)->endIndex << std::endl;
+    }
 
     if(removeIndex >= 0)
     {
@@ -92,8 +103,12 @@ void EdgeGraph::removeVertex(int removeData)
                 i--;
             }
         }
+    }
 
-        vertices.erase(vertices.begin()+removeIndex);
+    std::cout << "Edges after remove: " << edges.size() << std::endl;
+    for(int i = 0; i < edges.size(); i++)
+    {
+        std::cout << edges.at(i)->startIndex << "," << edges.at(i)->endIndex << std::endl;
     }
 }
 
@@ -120,11 +135,8 @@ int EdgeGraph::getValue(int index)
     return vertices.at(index)->data;
 }
 
-std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std::vector<int> ignoredEdgeIndexes)
+std::vector<edge*> EdgeGraph::findKruskalPath(int startIndex, int endIndex, std::vector<int> ignoredEdgeIndexes)
 {
-    int startIndex = findVertex(startValue);
-    int endIndex = findVertex(endValue);
-
     if(!(startIndex >= 0 && endIndex >= 0))
     {
         std::vector<edge*> path;
@@ -150,8 +162,9 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
         }
 
         trees.at(0).push_back(edges.at(smallestIndex));
+        ignoredEdgeIndexes.push_back(smallestIndex);
 
-        return findKruskalPath(startValue,endValue,trees, ignoredEdgeIndexes);
+        return findKruskalPath(startIndex,endIndex,trees, ignoredEdgeIndexes);
     }
     else
     {
@@ -160,10 +173,10 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
     }
 }
 
-std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std::vector<std::vector<edge*> > trees, std::vector<int> ignoredEdgeIndexes)
+std::vector<edge*> EdgeGraph::findKruskalPath(int startIndex, int endIndex, std::vector<std::vector<edge*> > trees, std::vector<int> ignoredEdgeIndexes)
 {
-    int startIndex = findVertex(startValue);
-    int endIndex = findVertex(endValue);
+    std::cout << "Starting at: " << startIndex << std::endl;
+    std::cout << "Ending at: " << endIndex << std::endl;
 
     if(!(startIndex >= 0 && endIndex >= 0))
     {
@@ -201,104 +214,69 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
 
             if(!foundSmallest)
             {
-                std::vector<edge*> path;
-                return path;
+                break;
             }
 
             edge *smallestEdge = edges.at(smallestIndex);
             smallestEdge->beenChecked = true;
 
             //Make sure the new edge doesn't form a cycle in any trees, then add it to all connecting trees
-            for(int i = 0; i < trees.size(); i++)
+
+            int connectionCounter = 0;
+
+            for(int i = 0; i < trees.at(0).size(); i++)
             {
-                bool addedEdge = false;
-                for(int j = 0; j < trees.at(i).size(); j++)
+                edge *treeEdge = trees.at(0).at(i);
+
+                //Duplicate edge check
+                if((smallestEdge->endIndex == treeEdge->endIndex && smallestEdge->startIndex == treeEdge->endIndex) ||
+                   (smallestEdge->endIndex == treeEdge->startIndex && smallestEdge->startIndex == treeEdge->endIndex))
                 {
-                    edge *treeEdge = trees.at(i).at(j);
-                    if(smallestEdge->startIndex == treeEdge->startIndex || smallestEdge->startIndex == treeEdge->endIndex
-                       || smallestEdge->endIndex == treeEdge->startIndex || smallestEdge->endIndex == treeEdge->endIndex)
-                    {
-                        bool edgeOkay = true;
-
-                        //Ensure a cycle isn't formed
-                        for(int k = 0; k < trees.at(i).size(); k++)
-                        {
-                            edge *otherTreeEdge = trees.at(i).at(k);
-                            if(k != j)
-                            {
-                                if(smallestEdge->endIndex == otherTreeEdge->startIndex || smallestEdge->endIndex == otherTreeEdge->endIndex)
-                                {
-                                    edgeOkay = false;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                //Duplicate edge check
-                                if((smallestEdge->startIndex == otherTreeEdge->startIndex && smallestEdge->endIndex == otherTreeEdge->endIndex)
-                                   || (smallestEdge->startIndex == otherTreeEdge->endIndex && smallestEdge->endIndex == otherTreeEdge->startIndex))
-                                {
-                                    edgeOkay = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if(edgeOkay)
-                        {
-                            trees.at(i).push_back(smallestEdge);
-                            addedEdge = true;
-                        }
-                    }
-                }
-
-                if(addedEdge)
-                {
-                    ignoredEdgeIndexes.push_back(smallestIndex);
-
-                    //Combine trees that now share the newly added edge, if any
-                    std::vector<int> sharedIndexes;
-                    for(int j = 0; j < trees.size(); j++)
-                    {
-                        for(int k = 0; k < trees.at(j).size(); k++)
-                        {
-                            if(smallestEdge == trees.at(j).at(k))
-                            {
-                                sharedIndexes.push_back(j);
-                                break;
-                            }
-                        }
-                    }
-
-                    for(int j = sharedIndexes.size()-1; j > 0; j--)
-                    {
-                        for(int k = 0; k < trees.at(sharedIndexes.at(j)).size(); k++)
-                        {
-                            if(trees.at(sharedIndexes.at(j)).at(k) != smallestEdge)
-                            {
-                                trees.at(sharedIndexes.at(j)).erase(trees.at(sharedIndexes.at(j)).begin()+k);
-                                trees.at(sharedIndexes.at(0)).push_back(trees.at(sharedIndexes.at(j)).at(k));
-                            }
-                        }
-                        trees.erase(trees.begin()+sharedIndexes.at(j));
-                    }
-
-                    //If the new amalgamated vector is large than trees[0], swap the two
-                    if(trees.at(sharedIndexes.at(0)).size() > trees.at(0).size())
-                    {
-                        trees.at(0).swap(trees.at(sharedIndexes.at(0)));
-                    }
-
+                    connectionCounter = 3;
                     break;
                 }
+
+                if(smallestEdge->startIndex == treeEdge->startIndex)
+                {
+                    connectionCounter++;
+                }
+
+                if(smallestEdge->startIndex == treeEdge->endIndex)
+                {
+                    connectionCounter++;
+                }
+
+                if(smallestEdge->endIndex == treeEdge->startIndex)
+                {
+                    connectionCounter++;
+                }
+
+                if(smallestEdge->endIndex == treeEdge->endIndex)
+                {
+                    connectionCounter++;
+                }
+            }
+
+            //The edge connects to the tree in one or fewer places, meaning no cycle is formed
+            if(connectionCounter <= 2)
+            {
+                trees.at(0).push_back(smallestEdge);
             }
         }
 
-        //Find the path from start to end
+        //Find the path from start to end, if it exists
 
         //Push the first edge onto the path
         std::vector<edge*> path;
         std::vector<edge*> spanningTree = trees.at(0);
+
+        std::cout << "Spanning tree: " << std::endl;
+
+        for(int i = 0; i < spanningTree.size(); i++)
+        {
+            std::cout << spanningTree.at(i)->startIndex << "," << spanningTree.at(i)->endIndex << std::endl;
+        }
+
         for(int i = 0; i < spanningTree.size(); i++)
         {
             if(spanningTree.at(i)->startIndex == startIndex)
@@ -310,16 +288,9 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
             {
                 if(spanningTree.at(i)->directed)
                 {
-                    for(int j = 0; j < edges.size(); j++)
-                    {
-                        if(spanningTree.at(i) == edges.at(j))
-                        {
-                            spanningTree.erase(spanningTree.begin()+i);
-                            ignoredEdgeIndexes.push_back(j);
-                            trees.at(0) = spanningTree;
-                            return findKruskalPath(startValue,endValue,trees,ignoredEdgeIndexes);
-                        }
-                    }
+                    spanningTree.erase(spanningTree.begin()+i);
+                    trees.at(0) = spanningTree;
+                    return findKruskalPath(startIndex,endIndex,trees,ignoredEdgeIndexes);
                 }
                 else
                 {
@@ -329,31 +300,52 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
             }
         }
 
+        for(int i = 0; i < spanningTree.size(); i++)
+        {
+            spanningTree.at(i)->beenChecked = false;
+        }
+
         while(true)
         {
+            bool addedNewEdge = false;
             for(int i = 0; i < spanningTree.size(); i++)
             {
-                if(spanningTree.at(i)->startIndex == path.at(path.size()-1)->endIndex)
+                if(spanningTree.at(i)->startIndex == path.at(path.size()-1)->endIndex && !spanningTree.at(i)->beenChecked)
                 {
+                    addedNewEdge = true;
                     path.push_back(spanningTree.at(i));
+                    spanningTree.at(i)->beenChecked = true;
                     break;
                 }
-                else if(spanningTree.at(i)->endIndex == path.at(path.size()-1)->endIndex)
+                else if(spanningTree.at(i)->endIndex == path.at(path.size()-1)->endIndex && !spanningTree.at(i)->beenChecked)
                 {
-                    if(trees.at(0).at(i)->directed)
+                    if(spanningTree.at(i)->directed)
                     {
-                        spanningTree.erase(trees.at(0).begin()+i);
-                        i--;
+                        spanningTree.erase(spanningTree.begin()+i);
+                        trees.at(0) = spanningTree;
+                        return findKruskalPath(startIndex,endIndex,trees,ignoredEdgeIndexes);
                     }
                     else
                     {
-                        path.push_back(trees.at(0).at(i));
+                        addedNewEdge = true;
+                        path.push_back(spanningTree.at(i));
+                        spanningTree.at(i)->beenChecked = true;
                         break;
                     }
                 }
             }
 
-            if(path.at(path.size()-1)->endIndex == endIndex;)
+            if(addedNewEdge)
+            {
+                if(path.at(path.size()-1)->endIndex == endIndex)
+                {
+                    return path;
+                }
+            }
+            else
+            {
+                break;
+            }
         }
     }
     else
@@ -361,4 +353,7 @@ std::vector<edge*> EdgeGraph::findKruskalPath(int startValue, int endValue, std:
         std::vector<edge*> path;
         return path;
     }
+
+    std::vector<edge*> path;
+    return path;
 }

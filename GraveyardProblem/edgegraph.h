@@ -28,10 +28,10 @@ public:
     ~EdgeGraph();
 
     void addVertex(int newData);
-    void addEdge(int firstValue, int secondValue, int weight);
+    bool addEdge(int firstValue, int secondValue, int weight);
     void addEdgeDirected(int firstValue, int secondValue, int weight);
     void removeEdge(int firstValue, int secondValue);
-    void removeVertex(int removeData);
+    void removeVertex(int removeIndex);
 
     int getIndex(int value);
     int getValue(int index);
@@ -40,8 +40,8 @@ public:
     //the vertex containing startValue to the vertex containing endValue
     //std::vector<int> findDijkstraPath(int startValue, int endValue);
     //std::vector<int> findPrimPath(int startValue, int endValue);
-    std::vector<edge*> findKruskalPath(int startValue, int endValue, std::vector<int> ignoredEdgeIndexes);
-    std::vector<edge*> findKruskalPath(int startValue, int endValue, std::vector<std::vector<edge*> > trees, std::vector<int> ignoredEdgeIndexes);
+    std::vector<edge*> findKruskalPath(int startIndex, int endIndex, std::vector<int> ignoredEdgeIndexes);
+    std::vector<edge*> findKruskalPath(int startIndex, int endIndex, std::vector<std::vector<edge*> > trees, std::vector<int> ignoredEdgeIndexes);
 
 private:
 

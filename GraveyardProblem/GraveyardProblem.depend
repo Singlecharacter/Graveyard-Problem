@@ -1,11 +1,23 @@
 # depslib dependency file v1.0
-1416540772 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\edgegraph.cpp
+1418347811 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\edgegraph.cpp
 	"edgegraph.h"
 
-1416552948 c:\users\conor\documents\github\graveyard-problem\graveyardproblem\edgegraph.h
+1418344786 c:\users\conor\documents\github\graveyard-problem\graveyardproblem\edgegraph.h
 	<vector>
 	<iostream>
 
-1416540799 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\main.cpp
+1418345391 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\main.cpp
 	"edgegraph.h"
+	"customio.h"
+	<iostream>
+	<fstream>
+	<string>
+	<cstring>
+
+1391973600 source:c:\users\conor\documents\github\graveyard-problem\graveyardproblem\customio.cpp
+	"customio.h"
+
+1391973508 c:\users\conor\documents\github\graveyard-problem\graveyardproblem\customio.h
+	<string>
+	<iostream>
 
